@@ -1,4 +1,4 @@
-import redis
+import json
 
 from service.credential import get_redis_pool
 from datetime import timedelta
@@ -23,16 +23,20 @@ class Session:
 
     async def update(self, data: dict) -> None:
         session_key = "TokenSession" + self.token
-        await self.redis_connection.hset("session", session_key, data)
+        await self.redis_connection.hset("session", session_key, json.dumps(data))
+
+    async def get(self) -> dict:
+        session_key = "TokenSession" + self.token
+        data = await self.redis_connection.hget("session", session_key)
+        return json.loads(data)
 
     async def delete(self) -> None:
         session_key = "TokenSession" + self.token
         await self.redis_connection.hdel("session", session_key)
 
-    @staticmethod
-    async def is_valid(redis_pool: redis.Redis, token: str) -> bool:
-        session_key = "TokenSession" + token
-        return await redis_pool.hexists("session", session_key)
+    async def is_valid(self) -> bool:
+        session_key = "TokenSession" + self.token
+        return await self.redis_connection.hexists("session", session_key)
 
 
 async def get_active_session(
@@ -43,7 +47,8 @@ async def get_active_session(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    if await Session.is_valid(token=authorization.credentials):
-        return Session(token=authorization.credentials)
+    session = Session(token=authorization.credentials)
+    if await session.is_valid():
+        return session
     else:
         raise credentials_exception
