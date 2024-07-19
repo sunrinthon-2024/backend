@@ -42,16 +42,16 @@ def calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float):
 
 def transform_raid_data(alert_data: dict) -> dict:
     # duration을 초로 변환
-    duration_parts = alert_data['duration'].split(':')
+    duration_parts = alert_data["duration"].split(":")
     hours = int(duration_parts[0])
     minutes = int(duration_parts[1])
     seconds = int(duration_parts[2])
     total_seconds = hours * 3600 + minutes * 60 + seconds
-    alert_data['duration'] = total_seconds
+    alert_data["duration"] = total_seconds
 
-    end_date = datetime.strptime(alert_data['endDate'], '%Y-%m-%dT%H:%M:%SZ')
-    start_date = datetime.strptime(alert_data['startDate'], '%Y-%m-%dT%H:%M:%SZ')
-    alert_data['endDate'] = end_date
-    alert_data['startDate'] = start_date
+    end_date = datetime.strptime(alert_data["endDate"], "%Y-%m-%dT%H:%M:%SZ")
+    start_date = datetime.strptime(alert_data["startDate"], "%Y-%m-%dT%H:%M:%SZ")
+    alert_data["endDate"] = end_date
+    alert_data["startDate"] = start_date
 
     return alert_data

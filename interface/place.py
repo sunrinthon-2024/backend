@@ -34,6 +34,7 @@ class PlaceDetail(BaseModel):
     open_now: bool
     sleep_available: int
     safe_rating: int  # 이 장소가 안전한지 투표
+    photos: list[str]
 
 
 class PlaceSurvey(BaseModel):

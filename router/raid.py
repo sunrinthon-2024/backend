@@ -35,26 +35,33 @@ class Raid:
         data: list[dict] = await self.uasiren.get_alerts(region_id)
         data.reverse()
 
-        raid_report_list = await RaidReportDatabase.filter(area_level_name=area_level_name)
-        return_data = [RaidAlarm(
+        raid_report_list = await RaidReportDatabase.filter(
+            area_level_name=area_level_name
+        )
+        return_data = [
+            RaidAlarm(
                 raid_id=each.raid_id,
                 alert_type=each.alert_type,
                 start_time=each.start_time,
                 end_time=None,
                 duration=None,
                 is_continue=True,
-            ).model_dump() for each in raid_report_list]
+            ).model_dump()
+            for each in raid_report_list
+        ]
 
         for each_raw in data:
             each = transform_raid_data(each_raw)
-            return_data.append(RaidAlarm(
-                raid_id=each["id"],
-                alert_type=each["alertType"],
-                start_time=each["startDate"],
-                end_time=each["endDate"],
-                duration=each["duration"],
-                is_continue=each["isContinue"],
-            ).model_dump())
+            return_data.append(
+                RaidAlarm(
+                    raid_id=each["id"],
+                    alert_type=each["alertType"],
+                    start_time=each["startDate"],
+                    end_time=each["endDate"],
+                    duration=each["duration"],
+                    is_continue=each["isContinue"],
+                ).model_dump()
+            )
 
         set_return_data = return_data
         if len(return_data) > max_results:

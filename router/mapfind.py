@@ -1,3 +1,5 @@
+import os
+
 from dotenv import load_dotenv
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -12,6 +14,7 @@ from interface.place import (
     PlaceSurvey,
 )
 from database.place import Place as PlaceDatabase
+from utils.string import create_url
 
 from service.credential import depends_credential, Credential
 from service.gmap import GmapClient
@@ -87,6 +90,7 @@ class MapFind:
     )
     async def get_place_detail(self, place_id: str):
         place_data = await self.gmap_client.get_place_detail(place_id)
+        place_photo = await self.gmap_client.get_place_photos(place_id)
 
         place_database, _ = await PlaceDatabase.get_or_create(
             defaults={
@@ -97,7 +101,7 @@ class MapFind:
         )
         return JSONResponse(
             code=200,
-            message="Location updated successfully",
+            message="Place detail found successfully",
             data=PlaceDetail(
                 place_id=place_data["id"],
                 display_name=place_data["displayName"]["text"],
@@ -119,6 +123,12 @@ class MapFind:
                 ),
                 sleep_available=PlaceSleepType(place_database.sleep_available).value,
                 safe_rating=place_database.safe_rating,
+                photos=[create_url(
+                    str("https://places.googleapis.com/v1/" + photo["name"] + "/media?"),
+                    maxHeightPx=144,
+                    maxWidthPx=330,
+                    key=os.environ["GOOGLE_API_KEY"]
+                ) for photo in place_photo["photos"]],
             ).model_dump(),
         )
 

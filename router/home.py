@@ -23,6 +23,18 @@ class Home:
     credential: Credential = Depends(depends_credential)
     gmap_client = GmapClient()
 
+    @router.get("/search", description="장소 검색")
+    async def search_place(self, query_string: str):
+        location_data = await self.gmap_client.search_place(
+            query_string,
+            field_mask=["places.displayName", "places.location", "places.id"],
+        )
+        return JSONResponse(
+            code=200,
+            message="Location found successfully",
+            data=location_data,
+        )
+
     @router.post("/location", description="사용자의 홈 화면 접속 시 위치를 전송하세요")
     async def update_location(
         self,

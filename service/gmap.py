@@ -8,6 +8,18 @@ load_dotenv(verbose=True)
 
 
 class GmapClient(BaseRequest):
+    async def search_place(self, text_query: str, field_mask: list[str]) -> dict:
+        url = "https://places.googleapis.com/v1/places:searchText"
+        response = await self.post(
+            url,
+            json={"textQuery": text_query},
+            headers={
+                "X-Goog-Api-Key": os.environ["GOOGLE_API_KEY"],
+                "X-Goog-FieldMask": ",".join(field_mask),
+            },
+        )
+        return await response.json()
+
     async def get_location_from(self, address: str) -> dict:
         url = create_url(
             "https://maps.googleapis.com/maps/api/geocode/json?",
@@ -75,6 +87,20 @@ class GmapClient(BaseRequest):
             headers={
                 "X-Goog-Api-Key": os.environ["GOOGLE_API_KEY"],
                 "X-Goog-FieldMask": "*",
+            },
+        )
+        return await response.json()
+
+    async def get_place_photos(
+        self,
+        place_id: str,
+    ) -> dict:
+        url = "https://places.googleapis.com/v1/places/" + place_id
+        response = await self.get(
+            url,
+            headers={
+                "X-Goog-Api-Key": os.environ["GOOGLE_API_KEY"],
+                "X-Goog-FieldMask": ",".join(["id", "displayName", "photos"]),
             },
         )
         return await response.json()
