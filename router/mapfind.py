@@ -80,10 +80,7 @@ class MapFind:
         description="특정 플레이스의 정보를 제공합니다.",
     )
     async def place(self, place_id: str):
-        if place_id.startswith("community:"):
-            place_data = None
-        else:
-            place_data = await self.gmap_client.get_place_detail(place_id)
+        place_data = await self.gmap_client.get_place_detail(place_id)
 
         place_database, _ = await PlaceDatabase.get_or_create(
             defaults={
