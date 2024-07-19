@@ -8,6 +8,15 @@ load_dotenv(verbose=True)
 
 
 class GmapClient(BaseRequest):
+    async def get_location_from(self, address: str) -> dict:
+        url = create_url(
+            "https://maps.googleapis.com/maps/api/geocode/json?",
+            address=address,
+            key=os.environ["GOOGLE_API_KEY"],
+        )
+        response = await self.get(url)
+        return await response.json()
+
     async def get_location_info(self, latitude: str, longitude: str) -> dict:
         url = create_url(
             "https://maps.googleapis.com/maps/api/geocode/json?",

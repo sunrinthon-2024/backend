@@ -42,10 +42,26 @@ class Raid:
             is_continue=each["isContinue"],
         ).model_dump() for each in data]
 
+        set_return_data = return_data
         if len(return_data) > max_results:
-            return return_data[:max_results]
-        else:
-            return return_data
+            set_return_data = return_data[:max_results]
+
+        raid_location = await self.gmap_client.get_location_from(area_level_name)
+        results = raid_location.get('results', [])
+        raid_location_geometry = None
+        if results:
+            raid_location_geometry = results[0]['geometry']['location']
+
+        return JSONResponse(
+            code=200,
+            message="Success",
+            data={
+                "alerts": set_return_data,
+                "region": area_level_name,
+                "latitude": str(raid_location_geometry.get("lat") if results else ""),
+                "longitude": str(raid_location_geometry.get("lng") if results else ""),
+            }
+        )
 
 
 
