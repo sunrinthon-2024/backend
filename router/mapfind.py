@@ -12,16 +12,10 @@ from fastapi.security import HTTPBearer
 from app.bitflag import UserBitflag
 from database.user import User as DatabaseUser
 from service.google_oauth import GoogleOAuth
-from service.credential import depends_credential, Credential, get_current_user
+from service.credential import depends_credential, Credential
 
 load_dotenv(verbose=True)
 router = APIRouter(tags=["mapfind"], prefix="/mapfind")
-
-
-security = HTTPBearer(
-    scheme_name="User Access Token",
-    description="/auth에서 발급받은 토큰을 입력해주세요",
-)
 
 
 @cbv(router)
@@ -29,4 +23,4 @@ class MapFind:
     password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     credential: Credential = Depends(depends_credential)
 
-    ...
+    

@@ -18,16 +18,16 @@ security = HTTPBearer(
 )
 
 
+def get_redis_pool():
+    redis_pool = RedisConn(
+        host=os.environ["REDIS_HOST"], port=int(os.environ["REDIS_PORT"]), db=0
+    )
+    return redis_pool.connection
+
+
 class Credential:
     def __init__(self):
-        self.redis_connection = self.get_redis_pool()
-
-    @staticmethod
-    def get_redis_pool():
-        redis_pool = RedisConn(
-            host=os.environ["REDIS_HOST"], port=int(os.environ["REDIS_PORT"]), db=0
-        )
-        return redis_pool.connection
+        self.redis_connection = get_redis_pool()
 
     @staticmethod
     def verify_password(
