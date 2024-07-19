@@ -8,16 +8,30 @@ from dotenv import load_dotenv
 
 from tortoise.contrib.fastapi import RegisterTortoise
 
+from router import user
+from utils.url import create_url
+
 load_dotenv(verbose=True)
 logging.getLogger("passlib").setLevel(logging.ERROR)
 
 
 @asynccontextmanager
 async def lifespan(server: FastAPI):
+    print(
+        create_url(
+            "https://accounts.google.com/o/oauth2/v2/auth?",
+            scope="email profile",
+            state="security_token",
+            redirect_uri=os.environ["GOOGLE_REDIRECT_URI"],
+            response_type="code",
+            client_id=os.environ["GOOGLE_CLIENT_ID"],
+            access_type="online",
+        )
+    )
     async with RegisterTortoise(
         server,
         db_url=os.environ["DATABASE_URI"],
-        modules={"models": []},
+        modules={"models": ["database.user"]},
         generate_schemas=True,
         add_exception_handlers=True,
     ):
@@ -30,6 +44,8 @@ app = FastAPI(
     description="솦과인내 어쩌구 팀",
     version="0.1",
 )
+
+app.include_router(user.router)
 
 
 @app.get("/")
