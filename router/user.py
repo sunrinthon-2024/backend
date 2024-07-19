@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi_restful.cbv import cbv
 from passlib.context import CryptContext
 from interface.response import JSONResponse
+import traceback
 
 from app.bitflag import UserBitflag
 from database.user import User as DatabaseUser
@@ -59,6 +60,8 @@ class User:
             token_expired_time = datetime.now() + access_token_expires
             session = Session(token=access_token)
             await session.set_expire(access_token_expires)
+            await session.update({})
+
             return JSONResponse(
                 code=200,
                 message="Login successful",
@@ -67,9 +70,10 @@ class User:
                     "expired": int(token_expired_time.timestamp()),
                 },
             )
-        except Exception as _e:
+        except Exception as e:
+            traceback.print_exception(e)
             raise HTTPException(
-                status_code=500, detail="Internal Server Error, " + str(_e)
+                status_code=500, detail="Internal Server Error, " + str(e)
             )
 
     @router.post("/logout", description="로그아웃하기 (토큰 만료시키기)")
