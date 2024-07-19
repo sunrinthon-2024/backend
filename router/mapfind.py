@@ -4,7 +4,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi_restful.cbv import cbv
 from passlib.context import CryptContext
 from interface.response import JSONResponse
-from interface.place import PlaceDetail, PlaceLocation, PlaceSleepType, Place, PlaceSurvey
+from interface.place import (
+    PlaceDetail,
+    PlaceLocation,
+    PlaceSleepType,
+    Place,
+    PlaceSurvey,
+)
 from database.place import Place as PlaceDatabase
 
 from service.credential import depends_credential, Credential
@@ -141,6 +147,3 @@ class MapFind:
             code=200,
             message="Survey updated successfully",
         )
-
-
-
