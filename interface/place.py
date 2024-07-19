@@ -33,4 +33,10 @@ class PlaceDetail(BaseModel):
     google_map_uri: str
     open_now: bool
     sleep_available: int
-    safe_rating: int  # 1 ~ 5
+    safe_rating: int  # 이 장소가 안전한지 투표
+
+
+class PlaceSurvey(BaseModel):
+    survey_type: Literal["safe_rating", "sleep_available"]
+    survey_value: int
+    #  sleep_available: 0 - 불가능, 1 - 가능

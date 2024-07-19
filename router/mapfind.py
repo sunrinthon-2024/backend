@@ -1,10 +1,10 @@
 from dotenv import load_dotenv
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi_restful.cbv import cbv
 from passlib.context import CryptContext
 from interface.response import JSONResponse
-from interface.place import PlaceDetail, PlaceLocation, PlaceSleepType, Place
+from interface.place import PlaceDetail, PlaceLocation, PlaceSleepType, Place, PlaceSurvey
 from database.place import Place as PlaceDatabase
 
 from service.credential import depends_credential, Credential
@@ -79,7 +79,7 @@ class MapFind:
         "/place/{place_id}",
         description="특정 플레이스의 정보를 제공합니다.",
     )
-    async def place(self, place_id: str):
+    async def get_place_detail(self, place_id: str):
         place_data = await self.gmap_client.get_place_detail(place_id)
 
         place_database, _ = await PlaceDatabase.get_or_create(
@@ -115,3 +115,32 @@ class MapFind:
                 safe_rating=place_database.safe_rating,
             ).model_dump(),
         )
+
+    @router.get(
+        "/place/{place_id}/survey",
+        description="특정 플레이스의 정보를 업데이트합니다.",
+    )
+    async def survey_place(self, place_id: str, survey_data: PlaceSurvey):
+        if not await PlaceDatabase.exists(place_id=place_id):
+            raise HTTPException(
+                status_code=404,
+                detail="Place not found",
+            )
+        place_model = await PlaceDatabase.get(place_id=place_id)
+        if survey_data.survey_type == "safe_rating":
+            place_model.safe_rating += survey_data.survey_value
+        elif survey_data.survey_type == "sleep_available":
+            place_model.sleep_available = survey_data.survey_value
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid survey type",
+            )
+        await place_model.save()
+        return JSONResponse(
+            code=200,
+            message="Survey updated successfully",
+        )
+
+
+
