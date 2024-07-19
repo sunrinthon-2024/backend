@@ -80,17 +80,17 @@ class Raid:
     @router.post("/report", description="미등록 상황 등록")
     async def report_raid(self, report_data: RaidReport):
         location_data = await self.gmap_client.get_location_info(
-            report_data.latitude, report_data.longitude
+            str(report_data.location.latitude), str(report_data.location.longitude)
         )
         area_level_name = get_name_from(
             location_data["results"], "administrative_area_level_1"
         )
         create_result = await RaidReportDatabase.create(
-            latitude=report_data.latitude,
-            longitude=report_data.longitude,
+            latitude=report_data.location.latitude,
+            longitude=report_data.location.longitude,
             area_level_name=area_level_name,
             alert_type=report_data.alert_type,
-            on_time=datetime.fromtimestamp(report_data.on_time),
+            start_time=datetime.fromtimestamp(report_data.start_time),
             comment=report_data.comment,
         )
 

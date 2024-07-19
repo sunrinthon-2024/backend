@@ -16,5 +16,5 @@ class RaidAlarm(BaseModel):
 class RaidReport(BaseModel):
     location: PlaceLocation
     alert_type: str
-    on_time: int  # datetime
+    start_time: int  # datetime
     comment: str  # 간략한 상황 설명
