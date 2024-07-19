@@ -30,20 +30,22 @@ class GmapClient(BaseRequest):
         if extra_data is None:
             extra_data = {}
         url = "https://places.googleapis.com/v1/places:searchNearby"
-        extra_data.update({
-            "includedTypes": place_types,
-            "locationRestriction": {
-                "circle": {
-                    "center": {
-                        "latitude": float(latitude),
-                        "longitude": float(longitude)
-                    },
-                    "radius": float(radius)
-                }
-            },
-            "maxResultCount": max_results,
-            "rankPreference": "DISTANCE",
-        })
+        extra_data.update(
+            {
+                "includedTypes": place_types,
+                "locationRestriction": {
+                    "circle": {
+                        "center": {
+                            "latitude": float(latitude),
+                            "longitude": float(longitude),
+                        },
+                        "radius": float(radius),
+                    }
+                },
+                "maxResultCount": max_results,
+                "rankPreference": "DISTANCE",
+            }
+        )
         response = await self.post(
             url,
             headers={
@@ -51,5 +53,19 @@ class GmapClient(BaseRequest):
                 "X-Goog-FieldMask": ",".join(field_mask),
             },
             json=extra_data,
+        )
+        return await response.json()
+
+    async def get_place_detail(
+        self,
+        place_id: str,
+    ) -> dict:
+        url = "https://places.googleapis.com/v1/places/" + place_id
+        response = await self.get(
+            url,
+            headers={
+                "X-Goog-Api-Key": os.environ["GOOGLE_API_KEY"],
+                "X-Goog-FieldMask": "*",
+            },
         )
         return await response.json()
