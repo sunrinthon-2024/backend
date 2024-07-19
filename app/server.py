@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from tortoise.contrib.fastapi import RegisterTortoise
 
-from router import user, home, mapfind
+from router import user, home, mapfind, raid
 from utils.string import create_url
 
 load_dotenv(verbose=True)
@@ -51,6 +51,7 @@ app = FastAPI(
 app.include_router(user.router)
 app.include_router(home.router)
 app.include_router(mapfind.router)
+app.include_router(raid.router)
 
 
 @app.get("/")
