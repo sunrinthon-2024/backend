@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from tortoise.contrib.fastapi import RegisterTortoise
 
-from router import user, home
+from router import user, home, mapfind
 from utils.string import create_url
 
 load_dotenv(verbose=True)
@@ -47,6 +47,7 @@ app = FastAPI(
 
 app.include_router(user.router)
 app.include_router(home.router)
+app.include_router(mapfind.router)
 
 
 @app.get("/")
@@ -54,4 +55,4 @@ async def root():
     return {"message": "Hello Sunrinthon"}
 
 
-uvicorn.run(app, host="0.0.0.0", port=9000)
+uvicorn.run(app, host="0.0.0.0", port=9001)
