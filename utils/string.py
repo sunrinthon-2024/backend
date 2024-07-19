@@ -12,6 +12,12 @@ def get_country_locality_string(address_components: dict):
     return ",".join(parts[1:]).strip()
 
 
+def get_name_from(data: list[dict], name_type: str) -> str:
+    for item in data[0]["address_components"]:
+        if name_type in item["types"]:
+            return item["long_name"]
+
+
 def calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float):
     earthR = 6371.0
 
