@@ -1,37 +1,20 @@
-import os
 import uuid
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-import redis.asyncio as redis
-
-from app.redisconn import RedisConn
 
 from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi_restful.cbv import cbv
 from passlib.context import CryptContext
 from interface.response import JSONResponse
-from fastapi.security import HTTPBearer
 
 from app.bitflag import UserBitflag
 from database.user import User as DatabaseUser
 from service.google_oauth import GoogleOAuth
 from service.credential import depends_credential, Credential, get_current_user
+from service.session import Session, get_active_session
 
 load_dotenv(verbose=True)
 router = APIRouter(tags=["user"], prefix="/user")
-
-
-async def get_redis_pool() -> redis.Redis:
-    redis_pool = RedisConn(
-        host=os.environ["REDIS_HOST"], port=int(os.environ["REDIS_PORT"]), db=0
-    )
-    return redis_pool.connection
-
-
-security = HTTPBearer(
-    scheme_name="User Access Token",
-    description="/auth에서 발급받은 토큰을 입력해주세요",
-)
 
 
 @cbv(router)
@@ -74,6 +57,8 @@ class User:
                 user_id=str(database_user.id),
             )
             token_expired_time = datetime.now() + access_token_expires
+            session = Session(token=access_token)
+            await session.set_expire(access_token_expires)
             return JSONResponse(
                 code=200,
                 message="Login successful",
