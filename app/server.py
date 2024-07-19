@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 
 from tortoise.contrib.fastapi import RegisterTortoise
 
-from router import user
-from utils.url import create_url
+from router import user, home
+from utils.string import create_url
 
 load_dotenv(verbose=True)
 logging.getLogger("passlib").setLevel(logging.ERROR)
@@ -46,6 +46,7 @@ app = FastAPI(
 )
 
 app.include_router(user.router)
+app.include_router(home.router)
 
 
 @app.get("/")
