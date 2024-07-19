@@ -44,8 +44,6 @@ class GmapClient(BaseRequest):
             "maxResultCount": max_results,
             "rankPreference": "DISTANCE",
         })
-        print(extra_data)
-        print(",".join(field_mask))
         response = await self.post(
             url,
             headers={
