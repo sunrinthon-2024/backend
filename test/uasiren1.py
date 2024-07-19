@@ -11,7 +11,7 @@ async def main():
 
         # All response formats are available here: https://api.ukrainealarm.com/swagger/index.html
         regions = await client.get_regions()
-        with open('../dataset/ua_regions.json', 'w') as file:
+        with open("../dataset/ua_regions.json", "w") as file:
             # Step 4: Use json.dump() to write the data
             json.dump(regions, file, indent=2, ensure_ascii=False)
 
