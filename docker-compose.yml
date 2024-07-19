@@ -3,9 +3,9 @@ version: '3.8'
 services:
   web:
     build: .
-    command: python app/server.py
+    command: python /app/app/server.py
     volumes:
-      - .:/code
+      - .:/app
     ports:
       - "9001:80"
     depends_on:
