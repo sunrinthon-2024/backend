@@ -31,7 +31,10 @@ async def lifespan(server: FastAPI):
     async with RegisterTortoise(
         server,
         db_url=os.environ["DATABASE_URI"],
-        modules={"models": ["database.user"]},
+        modules={"models": [
+            "database.user",
+            "database.place",
+        ]},
         generate_schemas=True,
         add_exception_handlers=True,
     ):
